@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCarModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CarModel>
+    <Id>1</Id>
+    <Name>Tesla Model S</Name>
+    <ImageUrl>images/tesla_s.png</ImageUrl>
+    <Location>Craiova</Location>
+    <Description>Luxury EV with autopilot.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>2</Id>
+    <Name>Honda Civic</Name>
+    <ImageUrl>images/honda_civic.png</ImageUrl>
+    <Location>Cluj-Napoca</Location>
+    <Description>Reliable and fuel-efficient.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>3</Id>
+    <Name>Ford Mustang</Name>
+    <ImageUrl>images/fordmustang.png</ImageUrl>
+    <Location>Iași</Location>
+    <Description>Classic American muscle.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>4</Id>
+    <Name>Range Rover</Name>
+    <ImageUrl>images/range_rover.png</ImageUrl>
+    <Location>Brașov</Location>
+    <Description>Premium SUV for all terrains.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>5</Id>
+    <Name>Toyota Prius</Name>
+    <ImageUrl>images/prius.png</ImageUrl>
+    <Location>Timișoara </Location>
+    <Description>Hybrid efficiency.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>6</Id>
+    <Name>Chevrolet Camaro</Name>
+    <ImageUrl>images/camaro.png</ImageUrl>
+    <Location>Sibiu</Location>
+    <Description>High-performance coupe.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>7</Id>
+    <Name>BMW i3</Name>
+    <ImageUrl>images/bmwi3.png</ImageUrl>
+    <Location>Ploiești</Location>
+    <Description>Compact urban electric.</Description>
+  </CarModel>
+  <CarModel>
+    <Id>8</Id>
+    <Name>Audi Q5</Name>
+    <ImageUrl>images/audi_q5.png</ImageUrl>
+    <Location>Constanța</Location>
+    <Description>Comfortable, high-tech SUV.</Description>
+  </CarModel>
+</ArrayOfCarModel>

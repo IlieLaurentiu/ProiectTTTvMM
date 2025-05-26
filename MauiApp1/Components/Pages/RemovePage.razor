@@ -1,6 +1,6 @@
 ﻿@page "/RemovePage"
 
-@using System.Text.Json
+@using System.Xml.Serialization
 @using MudBlazor
 @inject ISnackbar Snackbar
 
@@ -30,7 +30,7 @@
     private int selectedCarId;
     private List<CarModel> cars = new();
 
-    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
+    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.xml");
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,8 +43,9 @@
         {
             if (File.Exists(filePath))
             {
-                var json = await File.ReadAllTextAsync(filePath);
-                cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new List<CarModel>();
+                var serializer = new XmlSerializer(typeof(List<CarModel>));
+                using var stream = File.OpenRead(filePath);
+                cars = (List<CarModel>)serializer.Deserialize(stream);
             }
         }
         catch (Exception ex)
@@ -57,9 +58,10 @@
     {
         try
         {
-            var json = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(filePath, json);
-            Console.WriteLine("✅ JSON file updated successfully.");
+            var serializer = new XmlSerializer(typeof(List<CarModel>));
+            using var stream = File.Create(filePath);
+            serializer.Serialize(stream, cars);
+            Console.WriteLine("✅ XML file updated successfully.");
         }
         catch (Exception ex)
         {
@@ -73,13 +75,12 @@
         if (carToRemove != null)
         {
             cars.Remove(carToRemove);
-            await SaveCarsAsync(); // write the updated list back to file
+            await SaveCarsAsync();
 
             Snackbar.Add($"✅ Removed car: {carToRemove.Name}", Severity.Success);
             selectedCarId = 0;
 
-            // Clear form validation manually
-            await form.Validate(); // this refreshes the form state
+            await form.Validate();
             StateHasChanged();
         }
     }

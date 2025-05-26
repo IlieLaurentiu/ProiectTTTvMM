@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.ComponentModel.DataAnnotations
+@using System.Xml.Serialization
 
 <MudContainer Class="my-4" Fixed="true">
     <h1> Rent a car </h1>
@@ -66,9 +67,8 @@
         await _form.Validate();
         if (_isValid)
         {
-            // Handle successful submission
             Console.WriteLine($"Car rented by {rentalModel.Name} for {rentalModel.CarModel}");
-            // Reset form or navigate, etc.
+            // Reset or continue flow
         }
     }
 
@@ -100,13 +100,13 @@
 
     private void RentCar(int id)
     {
-        // Rent logic here
+        // Placeholder for renting logic
     }
 
     private int GetXs()
     {
         int value = xs[xsIndex];
-        xsIndex = (xsIndex + 1) % xs.Count; // Loop back to start
+        xsIndex = (xsIndex + 1) % xs.Count;
         return value;
     }
 
@@ -117,27 +117,53 @@
         public string ImageUrl { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
-
     }
 
     protected override void OnParametersSet()
     {
-        // Reset index each time component is rendered
         xsIndex = 0;
     }
 
     private async Task SerializeCars()
     {
-        foreach (var car in Cars)
+        try
         {
-            string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
-            string jsonString = JsonSerializer.Serialize(Cars, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(filePath, jsonString);
+            var filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.xml");
+            var serializer = new XmlSerializer(typeof(List<CarModel>));
+            using var writer = new StreamWriter(filePath);
+            serializer.Serialize(writer, Cars);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"XML Serialization error: {ex.Message}");
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
         await SerializeCars();
+    }
+
+    void TestXmlSaveLoad()
+    {
+        var carsTest = new List<CarModel>
+    {
+        new CarModel { Id = 1, Name = "Test Car", Location = "Test", Description = "Desc", ImageUrl = "img" }
+    };
+
+        string testPath = "test_cars.xml";
+
+        var serializer = new XmlSerializer(typeof(List<CarModel>));
+        using (var stream = File.Create(testPath))
+        {
+            serializer.Serialize(stream, carsTest);
+            Console.WriteLine("Saved test XML");
+        }
+
+        using (var stream = File.OpenRead(testPath))
+        {
+            var loadedCars = (List<CarModel>)serializer.Deserialize(stream);
+            Console.WriteLine($"Loaded {loadedCars.Count} cars from test XML");
+        }
     }
 }

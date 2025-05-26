@@ -1,29 +1,31 @@
 ﻿@page "/AddPage"
 
-@using System.Text.Json
+@using System.Xml.Serialization
+@using MudBlazor
 @inject ISnackbar Snackbar
 
 <MudPaper Class="pa-4 mx-auto" Style="max-width:600px;">
     <MudForm @ref="form" OnValidSubmit="HandleValidSubmit">
-        <MudText Typo="Typo.h5" Class="mb-4">Add New Car</MudText>
 
-        <MudTextField @bind-Value="newCar.Name" Label="Car Name" Required="true" />
+        <MudText Typo="Typo.h5" Class="mb-4">Add Car</MudText>
+
+        <MudTextField @bind-Value="newCar.Name" Label="Name" Required="true" />
         <MudTextField @bind-Value="newCar.ImageUrl" Label="Image URL" Required="true" />
         <MudTextField @bind-Value="newCar.Location" Label="Location" Required="true" />
-        <MudTextField @bind-Value="newCar.Description" Label="Description" Required="true" />
+        <MudTextField @bind-Value="newCar.Description" Label="Description" />
 
-        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            Add Car
-        </MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Add Car</MudButton>
+
     </MudForm>
 </MudPaper>
 
 @code {
     private MudForm form;
     private CarModel newCar = new();
+
     private List<CarModel> cars = new();
 
-    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
+    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.xml");
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,18 +34,23 @@
 
     private async Task LoadCarsAsync()
     {
-        if (File.Exists(filePath))
+        try
         {
-            try
+            if (File.Exists(filePath))
             {
-                var json = await File.ReadAllTextAsync(filePath);
-                cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new List<CarModel>();
+                var serializer = new XmlSerializer(typeof(List<CarModel>));
+                using var stream = File.OpenRead(filePath);
+                cars = (List<CarModel>)serializer.Deserialize(stream);
             }
-            catch (Exception ex)
+            else
             {
-                Snackbar.Add($"Error loading cars: {ex.Message}", Severity.Error);
                 cars = new List<CarModel>();
             }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading cars: {ex.Message}", Severity.Error);
+            cars = new List<CarModel>();
         }
     }
 
@@ -51,8 +58,10 @@
     {
         try
         {
-            var json = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(filePath, json);
+            var serializer = new XmlSerializer(typeof(List<CarModel>));
+            using var stream = File.Create(filePath);
+            serializer.Serialize(stream, cars);
+            Console.WriteLine("✅ XML file saved successfully.");
         }
         catch (Exception ex)
         {
@@ -62,16 +71,17 @@
 
     private async Task HandleValidSubmit()
     {
+        // Generate a new Id based on max existing Id or 1 if empty
         newCar.Id = cars.Any() ? cars.Max(c => c.Id) + 1 : 1;
 
         cars.Add(newCar);
+
         await SaveCarsAsync();
 
-        Snackbar.Add($"Added car: {newCar.Name}", Severity.Success);
+        Snackbar.Add($"✅ Added car: {newCar.Name}", Severity.Success);
 
-        newCar = new(); // Reset model manually
-        form.ResetValidation(); // Clear validation
-        StateHasChanged();
+        newCar = new CarModel(); // reset form model
+        await form.ResetAsync();
     }
 
     public class CarModel
