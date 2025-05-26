@@ -21,14 +21,18 @@
         <MudDrawerHeader>
             <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
         </MudDrawerHeader>
-        @*NavMenu*@
+        <MudNavMenu>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="AddPage" Icon="@Icons.Material.Filled.Add">Add Car</MudNavLink>
+            <MudNavLink Href="RemovePage" Icon="@Icons.Material.Filled.Remove">Remove Car</MudNavLink>
+        </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
 @code {
-    bool _drawerOpen = true;
+    bool _drawerOpen = false;
 
     void DrawerToggle()
     {

@@ -1,0 +1,58 @@
+[
+  {
+    "Id": 1,
+    "Name": "Tesla Model S",
+    "ImageUrl": "images/tesla_s.png",
+    "Location": "Craiova",
+    "Description": "Luxury EV with autopilot."
+  },
+  {
+    "Id": 2,
+    "Name": "Honda Civic",
+    "ImageUrl": "images/honda_civic.png",
+    "Location": "Cluj-Napoca",
+    "Description": "Reliable and fuel-efficient."
+  },
+  {
+    "Id": 3,
+    "Name": "Ford Mustang",
+    "ImageUrl": "images/fordmustang.png",
+    "Location": "Ia\u0219i",
+    "Description": "Classic American muscle."
+  },
+  {
+    "Id": 4,
+    "Name": "Range Rover",
+    "ImageUrl": "images/range_rover.png",
+    "Location": "Bra\u0219ov",
+    "Description": "Premium SUV for all terrains."
+  },
+  {
+    "Id": 5,
+    "Name": "Toyota Prius",
+    "ImageUrl": "images/prius.png",
+    "Location": "Timi\u0219oara ",
+    "Description": "Hybrid efficiency."
+  },
+  {
+    "Id": 6,
+    "Name": "Chevrolet Camaro",
+    "ImageUrl": "images/camaro.png",
+    "Location": "Sibiu",
+    "Description": "High-performance coupe."
+  },
+  {
+    "Id": 7,
+    "Name": "BMW i3",
+    "ImageUrl": "images/bmwi3.png",
+    "Location": "Ploie\u0219ti",
+    "Description": "Compact urban electric."
+  },
+  {
+    "Id": 8,
+    "Name": "Audi Q5",
+    "ImageUrl": "images/audi_q5.png",
+    "Location": "Constan\u021Ba",
+    "Description": "Comfortable, high-tech SUV."
+  }
+]

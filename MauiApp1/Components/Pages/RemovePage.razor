@@ -1,0 +1,95 @@
+﻿@page "/RemovePage"
+
+@using System.Text.Json
+@using MudBlazor
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4 mx-auto" Style="max-width:600px;">
+    <MudForm @ref="form" OnValidSubmit="HandleValidSubmit">
+
+        <MudText Typo="Typo.h5" Class="mb-4">Remove Car</MudText>
+
+        <MudSelect @bind-Value="selectedCarId" Label="Select Car to Remove" Required="true" T="int">
+            @foreach (var car in cars)
+            {
+                <MudSelectItem Value="@car.Id">[@car.Id] @car.Name (@car.Location)</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" Class="mt-4" Disabled="@(!cars.Any())">Remove Car</MudButton>
+    </MudForm>
+
+    @if (!cars.Any())
+    {
+        <MudText>No cars available to remove.</MudText>
+    }
+</MudPaper>
+
+@code {
+    private MudForm form;
+    private int selectedCarId;
+    private List<CarModel> cars = new();
+
+    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCarsAsync();
+    }
+
+    private async Task LoadCarsAsync()
+    {
+        try
+        {
+            if (File.Exists(filePath))
+            {
+                var json = await File.ReadAllTextAsync(filePath);
+                cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new List<CarModel>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading cars: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SaveCarsAsync()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(filePath, json);
+            Console.WriteLine("✅ JSON file updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving cars: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var carToRemove = cars.FirstOrDefault(c => c.Id == selectedCarId);
+        if (carToRemove != null)
+        {
+            cars.Remove(carToRemove);
+            await SaveCarsAsync(); // write the updated list back to file
+
+            Snackbar.Add($"✅ Removed car: {carToRemove.Name}", Severity.Success);
+            selectedCarId = 0;
+
+            // Clear form validation manually
+            await form.Validate(); // this refreshes the form state
+            StateHasChanged();
+        }
+    }
+
+    public class CarModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string ImageUrl { get; set; }
+        public string Location { get; set; }
+        public string Description { get; set; }
+    }
+}

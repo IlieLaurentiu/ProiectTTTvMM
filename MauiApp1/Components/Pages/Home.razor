@@ -1,5 +1,143 @@
 ﻿@page "/"
+@using System.ComponentModel.DataAnnotations
 
-<h1>Hello, world!</h1>
+<MudContainer Class="my-4" Fixed="true">
+    <h1> Rent a car </h1>
+    <MudPaper Elevation="4" Class="pa-6 mx-auto mb-16" Style="max-width: 500px;">
+        <MudForm @ref="_form" Model="@rentalModel" @bind-IsValid="@_isValid">
+            <MudText Typo="Typo.h5" Class="mb-4">Rent a Car</MudText>
 
-Welcome to your new app.
+            <MudTextField @bind-Value="rentalModel.Name" Class="mb-2" Label="Full Name" Required="true" />
+            <MudTextField @bind-Value="rentalModel.Email" Class="mb-2" Label="Email" Required="true" Validation="@(new EmailAddressAttribute().IsValid)" />
+
+            <MudDateRangePicker @bind-Date="rentalModel.StartDate" Class="mb-2" Label="Start Date" Required="true" />
+
+            <MudSelect T="string" Label="Car Model" Class="mb-2" @bind-Value="rentalModel.CarModel" Required="true">
+                <MudSelectItem Value="@("Dacia")">Dacia Logan</MudSelectItem>
+                <MudSelectItem Value="@("VW")">VW Golf</MudSelectItem>
+                <MudSelectItem Value="@("BMW")">BMW 3 Series</MudSelectItem>
+            </MudSelect>
+
+            <MudButton Disabled="@(!_isValid)" Color="Color.Primary"  Variant="Variant.Filled" OnClick="@Submit" Class="mt-4">
+                Rent Car
+            </MudButton>
+        </MudForm>
+    </MudPaper>
+
+    <h4> Browse our models </h4>
+    <MudCarousel Class="mud-width-full" Style="height: 700px" 
+        ShowArrows="true" 
+        ShowBullets="true" 
+        EnableSwipeGesture="true" 
+        AutoCycle="true" 
+        TData="object">
+        @for (int i = 0; i < carouselPageCount; i++)
+        {
+            <MudCarouselItem Transition="Transition.Slide" Class="mx-16" >
+                <MudGrid>
+                    @foreach (var car in Cars)
+                    {
+                        <MudItem xs="@GetXs()">
+                            <CarCard CarName="@car.Name"
+                                     ImageUrl="@car.ImageUrl"
+                                     Description="@car.Description"
+                                     CarLocation="@car.Location"
+                                     OnRent="() => RentCar(car.Id)" />
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudCarouselItem>
+
+        }
+    </MudCarousel>
+
+
+</MudContainer>
+
+
+@code {
+    private MudForm _form;
+    private bool _isValid;
+
+    private RentalModel rentalModel = new();
+
+    private async Task Submit()
+    {
+        await _form.Validate();
+        if (_isValid)
+        {
+            // Handle successful submission
+            Console.WriteLine($"Car rented by {rentalModel.Name} for {rentalModel.CarModel}");
+            // Reset form or navigate, etc.
+        }
+    }
+
+    public class RentalModel
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string CarModel { get; set; }
+    }
+
+    private int _index = 0;
+    private int carouselPageCount = 3;
+    private List<int> xs = new() { 3, 4, 2, 3, 3, 2, 4, 3 };
+    private int xsIndex = 0;
+
+    private List<CarModel> Cars = new()
+    {
+        new() { Id = 1, Name = "Tesla Model S", ImageUrl = "images/tesla_s.png", Description = "Luxury EV with autopilot.", Location = "Craiova"},
+        new() { Id = 2, Name = "Honda Civic", ImageUrl = "images/honda_civic.png", Description = "Reliable and fuel-efficient.", Location = "Cluj-Napoca" },
+        new() { Id = 3, Name = "Ford Mustang", ImageUrl = "images/fordmustang.png", Description = "Classic American muscle.", Location = "Iași"},
+        new() { Id = 4, Name = "Range Rover", ImageUrl = "images/range_rover.png", Description = "Premium SUV for all terrains.", Location = "Brașov" },
+        new() { Id = 5, Name = "Toyota Prius", ImageUrl = "images/prius.png", Description = "Hybrid efficiency.", Location = "Timișoara " },
+        new() { Id = 6, Name = "Chevrolet Camaro", ImageUrl = "images/camaro.png", Description = "High-performance coupe.", Location = "Sibiu" },
+        new() { Id = 7, Name = "BMW i3", ImageUrl = "images/bmwi3.png", Description = "Compact urban electric.", Location = "Ploiești"},
+        new() { Id = 8, Name = "Audi Q5", ImageUrl = "images/audi_q5.png", Description = "Comfortable, high-tech SUV.", Location = "Constanța" }
+    };
+
+    private void RentCar(int id)
+    {
+        // Rent logic here
+    }
+
+    private int GetXs()
+    {
+        int value = xs[xsIndex];
+        xsIndex = (xsIndex + 1) % xs.Count; // Loop back to start
+        return value;
+    }
+
+    public class CarModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string ImageUrl { get; set; }
+        public string Location { get; set; }
+        public string Description { get; set; }
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Reset index each time component is rendered
+        xsIndex = 0;
+    }
+
+    private async Task SerializeCars()
+    {
+        foreach (var car in Cars)
+        {
+            string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
+            string jsonString = JsonSerializer.Serialize(Cars, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(filePath, jsonString);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SerializeCars();
+    }
+}

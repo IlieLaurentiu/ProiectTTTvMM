@@ -67,4 +67,42 @@
         <PackageReference Include="MudBlazor" Version="8.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <MauiImage Include="wwwroot\images\audi_q5.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\bmwi3.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\camaro.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\fordmustang.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\honda_civic.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\prius.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\range_rover.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+      <MauiImage Include="wwwroot\images\tesla_s.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiImage>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="wwwroot\images\audi_q5.png" />
+      <None Include="wwwroot\images\bmwi3.png" />
+      <None Include="wwwroot\images\camaro.png" />
+      <None Include="wwwroot\images\fordmustang.png" />
+      <None Include="wwwroot\images\honda_civic.png" />
+      <None Include="wwwroot\images\prius.png" />
+      <None Include="wwwroot\images\range_rover.png" />
+      <None Include="wwwroot\images\tesla_s.png" />
+    </ItemGroup>
+
 </Project>

@@ -1,0 +1,56 @@
+﻿<MudCard Elevation="@elevation" Square="true" Style="height: 300px; overflow: hidden; display: flex; flex-direction: column;"
+         @onmouseover="ElevationOnMouseOver"
+         @onmouseout="ElevationOnMouseOut">
+
+    <MudCardContent Style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <MudText Typo="Typo.h6">@CarName</MudText>
+            <MudImage Src="@ImageUrl" Alt="Car Image" Style="width: 100%; aspect-ratio: 19 / 10; object-position: center;"/>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <MudElement Class="d-flex align-items-center mb-1">
+                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Color="Color.Primary" Size="Size.Small" />
+                    <MudText Style="margin-left: 4px;">@CarLocation</MudText>
+                </MudElement>
+                <MudText Typo="Typo.body2">@Description</MudText>
+            </div>
+
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@OnRent">
+                Rent
+            </MudButton>
+        </div>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private int elevation = 2;
+    
+    private void ElevationOnMouseOut(MouseEventArgs e)
+    {
+        elevation = 2;
+    }
+
+    private void ElevationOnMouseOver(MouseEventArgs e)
+    {
+        elevation = 8;
+    }
+    [Parameter]
+    public bool IsSmallImage { get; set; } = true;
+
+    [Parameter]
+    public string CarName { get; set; } = "Car Name";
+
+    [Parameter]
+    public string ImageUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public string CarLocation { get; set; } = "Car Location";
+
+    [Parameter]
+    public string Description { get; set; } = "Car description.";
+
+    [Parameter]
+    public EventCallback OnRent { get; set; }
+}
