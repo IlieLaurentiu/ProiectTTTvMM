@@ -130,7 +130,7 @@
     {
         foreach (var car in Cars)
         {
-            string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
+            string filePath = Path.Combine("E:\\Lau\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
             string jsonString = JsonSerializer.Serialize(Cars, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(filePath, jsonString);
         }

@@ -1,5 +1,6 @@
 ﻿@page "/AddPage"
 
+
 @using System.Text.Json
 @inject ISnackbar Snackbar
 
@@ -22,55 +23,42 @@
     private MudForm form;
     private CarModel newCar = new();
     private List<CarModel> cars = new();
+    private string filePath = Path.Combine("E:\\Lau\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
 
-    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadCarsAsync();
-    }
+    protected override async Task OnInitializedAsync() => await LoadCarsAsync();
 
     private async Task LoadCarsAsync()
     {
         if (File.Exists(filePath))
         {
-            try
-            {
-                var json = await File.ReadAllTextAsync(filePath);
-                cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new List<CarModel>();
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Error loading cars: {ex.Message}", Severity.Error);
-                cars = new List<CarModel>();
-            }
+            var json = await File.ReadAllTextAsync(filePath);
+            cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new();
         }
     }
 
     private async Task SaveCarsAsync()
     {
-        try
-        {
-            var json = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(filePath, json);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error saving cars: {ex.Message}", Severity.Error);
-        }
+        var json = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
+        await File.WriteAllTextAsync(filePath, json);
     }
 
     private async Task HandleValidSubmit()
     {
-        newCar.Id = cars.Any() ? cars.Max(c => c.Id) + 1 : 1;
+        var carToAdd = new CarModel
+            {
+                Id = cars.Any() ? cars.Max(c => c.Id) + 1 : 1,
+                Name = newCar.Name,
+                ImageUrl = newCar.ImageUrl,
+                Location = newCar.Location,
+                Description = newCar.Description
+            };
 
-        cars.Add(newCar);
+        cars.Add(carToAdd);
         await SaveCarsAsync();
 
-        Snackbar.Add($"Added car: {newCar.Name}", Severity.Success);
-
-        newCar = new(); // Reset model manually
-        form.ResetValidation(); // Clear validation
+        Snackbar.Add($"Added car: {carToAdd.Name}", Severity.Success);
+        newCar = new();
+        form.ResetValidation();
         StateHasChanged();
     }
 

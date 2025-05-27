@@ -1,23 +1,28 @@
 ﻿@page "/RemovePage"
 
 @using System.Text.Json
-@using MudBlazor
+@using System.ComponentModel.DataAnnotations
 @inject ISnackbar Snackbar
+@inject IJSRuntime JS
 
 <MudPaper Class="pa-4 mx-auto" Style="max-width:600px;">
-    <MudForm @ref="form" OnValidSubmit="HandleValidSubmit">
-
+    <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
         <MudText Typo="Typo.h5" Class="mb-4">Remove Car</MudText>
 
-        <MudSelect @bind-Value="selectedCarId" Label="Select Car to Remove" Required="true" T="int">
+        <MudSelect @bind-Value="model.SelectedCarId" Label="Select Car to Remove" T="int" For="@(() => model.SelectedCarId)">
             @foreach (var car in cars)
             {
                 <MudSelectItem Value="@car.Id">[@car.Id] @car.Name (@car.Location)</MudSelectItem>
             }
         </MudSelect>
 
-        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" Class="mt-4" Disabled="@(!cars.Any())">Remove Car</MudButton>
-    </MudForm>
+        <ValidationMessage For="@(() => model.SelectedCarId)" />
+
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Error" Class="mt-4" Disabled="@(!cars.Any())">
+            Remove Car
+        </MudButton>
+    </EditForm>
 
     @if (!cars.Any())
     {
@@ -26,14 +31,13 @@
 </MudPaper>
 
 @code {
-    private MudForm form;
-    private int selectedCarId;
     private List<CarModel> cars = new();
-
-    private string filePath = Path.Combine("D:\\Development\\Projects\\ProiectTTTvMM\\MauiApp1", "cars.json");
+    private RemoveCarModel model = new();
+    private string filePath = Path.Combine("E:\\Lau\\Projects\\ProiectTTTvMM", "cars.json");
 
     protected override async Task OnInitializedAsync()
     {
+        await LogToConsole("Initializing RemovePage...");
         await LoadCarsAsync();
     }
 
@@ -44,12 +48,18 @@
             if (File.Exists(filePath))
             {
                 var json = await File.ReadAllTextAsync(filePath);
-                cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new List<CarModel>();
+                cars = JsonSerializer.Deserialize<List<CarModel>>(json) ?? new();
+                await LogToConsole($"Loaded {cars.Count} cars from JSON.");
+            }
+            else
+            {
+                await LogToConsole("cars.json file not found.");
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error loading cars: {ex.Message}", Severity.Error);
+            Snackbar.Add("Error loading cars.", Severity.Error);
+            await LogToConsole($"Error loading cars: {ex.Message}");
         }
     }
 
@@ -59,29 +69,38 @@
         {
             var json = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
             await File.WriteAllTextAsync(filePath, json);
-            Console.WriteLine("✅ JSON file updated successfully.");
+            await LogToConsole("Successfully saved cars to JSON.");
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error saving cars: {ex.Message}", Severity.Error);
+            Snackbar.Add("Error saving cars.", Severity.Error);
+            await LogToConsole($"Error saving cars: {ex.Message}");
         }
     }
 
     private async Task HandleValidSubmit()
     {
-        var carToRemove = cars.FirstOrDefault(c => c.Id == selectedCarId);
+        await LogToConsole($"Form submitted. SelectedCarId = {model.SelectedCarId}");
+
+        var carToRemove = cars.FirstOrDefault(c => c.Id == model.SelectedCarId);
         if (carToRemove != null)
         {
             cars.Remove(carToRemove);
-            await SaveCarsAsync(); // write the updated list back to file
-
-            Snackbar.Add($"✅ Removed car: {carToRemove.Name}", Severity.Success);
-            selectedCarId = 0;
-
-            // Clear form validation manually
-            await form.Validate(); // this refreshes the form state
+            await SaveCarsAsync();
+            Snackbar.Add($"Removed car: {carToRemove.Name}", Severity.Success);
+            model.SelectedCarId = 0;
             StateHasChanged();
+            await LogToConsole($"Successfully removed car with ID: {carToRemove.Id}");
         }
+        else
+        {
+            await LogToConsole("Car not found in the list.");
+        }
+    }
+
+    private async Task LogToConsole(string message)
+    {
+        await JS.InvokeVoidAsync("console.log", $"[RemovePage] {message}");
     }
 
     public class CarModel
@@ -91,5 +110,11 @@
         public string ImageUrl { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
+    }
+
+    public class RemoveCarModel
+    {
+        [Required(ErrorMessage = "Please select a car to remove.")]
+        public int SelectedCarId { get; set; }
     }
 }
